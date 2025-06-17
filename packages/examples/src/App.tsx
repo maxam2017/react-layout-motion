@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Layout } from "react-layout-motion";
 
+const LayoutConfig = {
+  duration: 400,
+  easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+};
+
 function WrapperA({ children }: { children: React.ReactNode }) {
   return (
     <div className="p-5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl m-5 min-h-[100px] flex items-center justify-center">
@@ -74,7 +79,7 @@ export default function App() {
         {/* Container A */}
         <WrapperA>
           {!isInWrapperB && !showInC && (
-            <Layout layoutId="shared-target">
+            <Layout layoutId="shared-target" config={LayoutConfig}>
               <Target />
             </Layout>
           )}
@@ -88,7 +93,7 @@ export default function App() {
         {/* Container B */}
         <WrapperB>
           {isInWrapperB && !showInC && (
-            <Layout layoutId="shared-target">
+            <Layout layoutId="shared-target" config={LayoutConfig}>
               <Target />
             </Layout>
           )}
@@ -102,7 +107,7 @@ export default function App() {
         {/* Container C */}
         {showInC && (
           <div className="p-6 bg-gradient-to-br from-green-300 to-blue-300 rounded-2xl m-5 min-h-[120px] flex items-center justify-center">
-            <Layout layoutId="shared-target">
+            <Layout layoutId="shared-target" config={LayoutConfig}>
               <Target />
             </Layout>
           </div>
@@ -113,14 +118,14 @@ export default function App() {
         <h2 className="text-xl font-semibold mb-4">Multiple Targets</h2>
         <div className="flex gap-5">
           <div className="p-5 bg-gray-100 rounded-lg flex-1">
-            <Layout layoutId="item-1" style={{ marginBottom: "8px" }}>
+            <Layout layoutId="item-1" style={{ marginBottom: "8px" }} config={LayoutConfig}>
               <div className="p-2.5 bg-red-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                 Item 1
               </div>
             </Layout>
 
             {!isInWrapperB && (
-              <Layout layoutId="item-2">
+              <Layout layoutId="item-2" config={LayoutConfig}>
                 <div className="p-2.5 bg-blue-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                   Item 2
                 </div>
@@ -130,14 +135,14 @@ export default function App() {
 
           <div className="p-5 bg-gray-50 rounded-lg flex-1">
             {isInWrapperB && (
-              <Layout layoutId="item-2" style={{ marginBottom: "8px" }}>
+              <Layout layoutId="item-2" style={{ marginBottom: "8px" }} config={LayoutConfig}>
                 <div className="p-4 bg-blue-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                   Item 2 (Moved)
                 </div>
               </Layout>
             )}
 
-            <Layout layoutId="item-3" key={`item-3-${isInWrapperB}`}>
+            <Layout layoutId="item-3" key={`item-3-${isInWrapperB}`} config={LayoutConfig}>
               <div className="p-2.5 bg-emerald-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                 Item 3
               </div>
