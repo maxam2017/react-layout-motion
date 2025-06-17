@@ -1,5 +1,4 @@
 import typescript from "@rollup/plugin-typescript";
-import dts from "rollup-plugin-dts";
 
 const config = [
   {
@@ -18,11 +17,6 @@ const config = [
     ],
     plugins: [typescript()],
     external: ["react", "react-dom"],
-  },
-  {
-    input: "dist/types/index.d.ts",
-    output: [{ file: "dist/index.d.ts", format: "esm" }],
-    plugins: [dts()],
   },
 ];
 
