@@ -1,60 +1,13 @@
 {
-  "name": "react-layout-motion",
-  "type": "module",
-  "version": "0.0.0",
+  "name": "react-layout-motion-workspace",
+  "private": true,
   "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
-  "description": "React layout animation library (coming soon)",
-  "author": "maxam2017",
-  "license": "MIT",
-  "homepage": "https://github.com/maxam2017/react-layout-motion#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/maxam2017/react-layout-motion.git"
-  },
-  "bugs": {
-    "url": "https://github.com/maxam2017/react-layout-motion/issues"
-  },
-  "keywords": [
-    "react",
-    "animation",
-    "layout",
-    "motion",
-    "web-animations-api"
-  ],
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "clean": "rimraf dist",
-    "prebuild": "nr clean",
-    "build": "rollup -c",
-    "build:watch": "rollup -c -w",
-    "postbuild": "nr clean:temp",
-    "clean:temp": "rimraf dist/types",
-    "dev": "rollup -c -w",
-    "typecheck": "tsc --noEmit",
-    "prepublishOnly": "nr typecheck && nr build",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "dev": "concurrently \"pnpm -F core dev\" \"pnpm -F example dev\"",
+    "build": "pnpm -F react-layout-motion build",
+    "publish": "pnpm -F react-layout-motion publish"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.14.1",
-    "@antfu/ni": "^25.0.0",
-    "@rollup/plugin-typescript": "^12.1.3",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "eslint": "^9.29.0",
-    "rimraf": "^6.0.1",
-    "rollup": "^4.43.0",
-    "rollup-plugin-dts": "^6.2.1",
-    "tslib": "^2.8.1",
-    "typescript": "^5.8.3"
+    "concurrently": "^8.2.0"
   }
 }
