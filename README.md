@@ -10,20 +10,20 @@ npm install react-layout-motion
 ## Basic Usage
 
 ```jsx
-import { Layout } from 'react-layout-motion';
+import { Motion } from 'react-layout-motion';
 
 function App() {
   return (
-    <Layout layoutId="my-element">
+    <Motion layoutId="my-element">
       <div>This element will animate smoothly when its layout changes</div>
-    </Layout>
+    </Motion>
   );
 }
 ```
 
 ## API
 
-### Layout Component
+### Motion Component
 
 The component for creating layout animations.
 
@@ -44,7 +44,7 @@ The component for creating layout animations.
 ### Custom Animation Configuration
 
 ```jsx
-<Layout 
+<Motion 
   layoutId="custom-animation"
   config={{
     duration: 500,
@@ -52,7 +52,7 @@ The component for creating layout animations.
   }}
 >
   <div>Slower, custom easing animation</div>
-</Layout>
+</Motion>
 ```
 
 

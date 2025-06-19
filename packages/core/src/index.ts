@@ -1,3 +1,3 @@
-export { Layout } from "./components/Layout";
+export { Motion } from "./components/Motion";
 
 export * from "./types";

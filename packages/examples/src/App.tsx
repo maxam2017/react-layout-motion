@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layout } from "react-layout-motion";
+import { Motion } from "react-layout-motion";
 
 const LayoutConfig = {
   duration: 400,
@@ -79,9 +79,9 @@ export default function App() {
         {/* Container A */}
         <WrapperA>
           {!isInWrapperB && !showInC && (
-            <Layout layoutId="shared-target" config={LayoutConfig}>
+            <Motion layoutId="shared-target" config={LayoutConfig}>
               <Target />
-            </Layout>
+            </Motion>
           )}
           {(isInWrapperB || showInC) && (
             <div className="text-white text-lg">
@@ -93,9 +93,9 @@ export default function App() {
         {/* Container B */}
         <WrapperB>
           {isInWrapperB && !showInC && (
-            <Layout layoutId="shared-target" config={LayoutConfig}>
+            <Motion layoutId="shared-target" config={LayoutConfig}>
               <Target />
-            </Layout>
+            </Motion>
           )}
           {(!isInWrapperB || showInC) && (
             <div className="text-white text-lg">
@@ -107,9 +107,9 @@ export default function App() {
         {/* Container C */}
         {showInC && (
           <div className="p-6 bg-gradient-to-br from-green-300 to-blue-300 rounded-2xl m-5 min-h-[120px] flex items-center justify-center">
-            <Layout layoutId="shared-target" config={LayoutConfig}>
+            <Motion layoutId="shared-target" config={LayoutConfig}>
               <Target />
-            </Layout>
+            </Motion>
           </div>
         )}
       </div>
@@ -118,35 +118,35 @@ export default function App() {
         <h2 className="text-xl font-semibold mb-4">Multiple Targets</h2>
         <div className="flex gap-5">
           <div className="p-5 bg-gray-100 rounded-lg flex-1">
-            <Layout layoutId="item-1" style={{ marginBottom: "8px" }} config={LayoutConfig}>
+            <Motion layoutId="item-1" style={{ marginBottom: "8px" }} config={LayoutConfig}>
               <div className="p-2.5 bg-red-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                 Item 1
               </div>
-            </Layout>
+            </Motion>
 
             {!isInWrapperB && (
-              <Layout layoutId="item-2" config={LayoutConfig}>
+              <Motion layoutId="item-2" config={LayoutConfig}>
                 <div className="p-2.5 bg-blue-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                   Item 2
                 </div>
-              </Layout>
+              </Motion>
             )}
           </div>
 
           <div className="p-5 bg-gray-50 rounded-lg flex-1">
             {isInWrapperB && (
-              <Layout layoutId="item-2" style={{ marginBottom: "8px" }} config={LayoutConfig}>
+              <Motion layoutId="item-2" style={{ marginBottom: "8px" }} config={LayoutConfig}>
                 <div className="p-4 bg-blue-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                   Item 2 (Moved)
                 </div>
-              </Layout>
+              </Motion>
             )}
 
-            <Layout layoutId="item-3" key={`item-3-${isInWrapperB}`} config={LayoutConfig}>
+            <Motion layoutId="item-3" key={`item-3-${isInWrapperB}`} config={LayoutConfig}>
               <div className="p-2.5 bg-emerald-500 text-white rounded-md text-center transition-all duration-300 ease-in-out">
                 Item 3
               </div>
-            </Layout>
+            </Motion>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-export interface LayoutAnimationConfig {
+export interface MotionAnimationConfig {
   duration?: number;
   easing?: string;
 }

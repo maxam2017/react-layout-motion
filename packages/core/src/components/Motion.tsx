@@ -1,15 +1,15 @@
-import type { LayoutAnimationConfig } from "../types";
+import type { MotionAnimationConfig } from "../types";
 import { useLayoutAnimation } from "../hooks/useLayoutAnimation";
 
-interface LayoutProps {
+interface MotionProps {
   layoutId: string;
   children: React.ReactNode;
   style?: React.CSSProperties;
   as?: React.ElementType;
-  config?: LayoutAnimationConfig;
+  config?: MotionAnimationConfig;
 }
 
-export function Layout({ layoutId, children, style, as: Component = "div", config, ...props }: LayoutProps): React.ReactNode {
+export function Motion({ layoutId, children, style, as: Component = "div", config, ...props }: MotionProps): React.ReactNode {
   const ref = useLayoutAnimation<HTMLDivElement>(layoutId, config);
 
   return (

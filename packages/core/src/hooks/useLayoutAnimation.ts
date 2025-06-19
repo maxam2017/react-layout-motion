@@ -1,16 +1,16 @@
-import type { LayoutAnimationConfig } from "../types";
+import type { MotionAnimationConfig } from "../types";
 
 import { useLayoutEffect, useRef } from "react";
 import { LayoutManager } from "../utils/LayoutManger";
 
 const LayoutMangerInstance = LayoutManager.getInstance();
 
-const DefaultAnimationConfig: LayoutAnimationConfig = {
+const DefaultAnimationConfig: MotionAnimationConfig = {
   duration: 300,
   easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
 };
 
-export function useLayoutAnimation<T extends HTMLElement>(layoutId: string, config?: LayoutAnimationConfig): React.RefObject<T | null> {
+export function useLayoutAnimation<T extends HTMLElement>(layoutId: string, config?: MotionAnimationConfig): React.RefObject<T | null> {
   const elementRef = useRef<T>(null);
   const animationRef = useRef<Animation>(null);
   const layout = LayoutMangerInstance.getLayout(layoutId);
