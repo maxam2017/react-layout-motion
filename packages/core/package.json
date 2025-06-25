@@ -1,7 +1,7 @@
 {
   "name": "react-layout-motion",
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "React layout animation library (coming soon)",
   "author": "maxam2017",
