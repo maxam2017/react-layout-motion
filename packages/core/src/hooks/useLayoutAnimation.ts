@@ -12,11 +12,15 @@ const DefaultLayoutConfig: MotionAnimationConfig = {
 export function useLayoutAnimation<T extends HTMLElement>(
   layoutId?: string,
   config?: MotionAnimationConfig,
+  onLayoutAnimationStart?: () => void,
+  onLayoutAnimationComplete?: () => void,
 ): React.RefObject<T | null> {
   const elementRef = useRef<T>(null);
   const animationRef = useRef<Animation>(null);
   const layout = layoutId ? LayoutManagerInstance.getLayout(layoutId) : undefined;
   const configRef = useRef({ ...DefaultLayoutConfig, ...config });
+  const onAnimationStartRef = useRef(onLayoutAnimationStart);
+  const onAnimationFinishRef = useRef(onLayoutAnimationComplete);
 
   useLayoutEffect(() => {
     if (!elementRef.current || !layoutId)
@@ -82,6 +86,24 @@ export function useLayoutAnimation<T extends HTMLElement>(
           fill: "both",
         },
       );
+
+      if (onAnimationStartRef.current) {
+        if (animationRef.current.playState === "idle") {
+          animationRef.current.addEventListener("start", onAnimationStartRef.current);
+        }
+        else {
+          onAnimationStartRef.current();
+        }
+      }
+
+      if (onAnimationFinishRef.current) {
+        if (animationRef.current.playState === "finished") {
+          onAnimationFinishRef.current();
+        }
+        else {
+          animationRef.current.addEventListener("finish", onAnimationFinishRef.current);
+        }
+      }
     }
   }, []);
 

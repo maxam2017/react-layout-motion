@@ -17,6 +17,9 @@ interface MotionProps {
 
   transition?: MotionAnimationConfig;
   layoutTransition?: MotionAnimationConfig;
+
+  onLayoutAnimationStart?: () => void;
+  onLayoutAnimationComplete?: () => void;
 }
 
 export function Motion({
@@ -30,6 +33,8 @@ export function Motion({
   exit,
   transition,
   layoutTransition,
+  onLayoutAnimationStart,
+  onLayoutAnimationComplete,
   ...props
 }: MotionProps): React.ReactNode {
   const motionConfig: MotionConfig = {
@@ -44,7 +49,7 @@ export function Motion({
     },
   };
 
-  const elementRef = useLayoutAnimation<HTMLElement>(layoutId, layoutTransition);
+  const elementRef = useLayoutAnimation<HTMLElement>(layoutId, layoutTransition, onLayoutAnimationStart, onLayoutAnimationComplete);
   useMotionAnimation(elementRef, motionConfig);
 
   return (
