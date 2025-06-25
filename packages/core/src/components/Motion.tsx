@@ -1,19 +1,54 @@
-import type { MotionAnimationConfig } from "../types";
+import type { AnimationPhase, MotionAnimationConfig, MotionConfig } from "../types";
+
+import React from "react";
 import { useLayoutAnimation } from "../hooks/useLayoutAnimation";
+import { useMotionAnimation } from "../hooks/useMotionAnimation";
 
 interface MotionProps {
-  layoutId: string;
+  layoutId?: string;
   children: React.ReactNode;
+  className?: string;
   style?: React.CSSProperties;
   as?: React.ElementType;
-  config?: MotionAnimationConfig;
+
+  initial?: AnimationPhase;
+  animate?: AnimationPhase;
+  exit?: AnimationPhase;
+
+  transition?: MotionAnimationConfig;
+  layoutTransition?: MotionAnimationConfig;
 }
 
-export function Motion({ layoutId, children, style, as: Component = "div", config, ...props }: MotionProps): React.ReactNode {
-  const ref = useLayoutAnimation<HTMLDivElement>(layoutId, config);
+export function Motion({
+  layoutId,
+  children,
+  style,
+  className,
+  as: Component = "div",
+  initial,
+  animate,
+  exit,
+  transition,
+  layoutTransition,
+  ...props
+}: MotionProps): React.ReactNode {
+  const motionConfig: MotionConfig = {
+    phases: {
+      initial,
+      animate,
+      exit,
+    },
+    transitions: {
+      enter: transition,
+      exit: transition,
+    },
+  };
+
+  const elementRef = useLayoutAnimation<HTMLElement>(layoutId, layoutTransition);
+  useMotionAnimation(elementRef, motionConfig);
 
   return (
-    <Component ref={ref} style={style} {...props}>
+    <Component ref={elementRef} style={style} className={className} {...props}>
       {children}
     </Component>
   );

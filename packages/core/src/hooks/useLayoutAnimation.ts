@@ -1,46 +1,49 @@
 import type { MotionAnimationConfig } from "../types";
-
 import { useLayoutEffect, useRef } from "react";
 import { LayoutManager } from "../utils/LayoutManger";
 
-const LayoutMangerInstance = LayoutManager.getInstance();
+const LayoutManagerInstance = LayoutManager.getInstance();
 
-const DefaultAnimationConfig: MotionAnimationConfig = {
+const DefaultLayoutConfig: MotionAnimationConfig = {
   duration: 300,
   easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
 };
 
-export function useLayoutAnimation<T extends HTMLElement>(layoutId: string, config?: MotionAnimationConfig): React.RefObject<T | null> {
+export function useLayoutAnimation<T extends HTMLElement>(
+  layoutId?: string,
+  config?: MotionAnimationConfig,
+): React.RefObject<T | null> {
   const elementRef = useRef<T>(null);
   const animationRef = useRef<Animation>(null);
-  const layout = LayoutMangerInstance.getLayout(layoutId);
-  const configRef = useRef({ ...DefaultAnimationConfig, ...config });
+  const layout = layoutId ? LayoutManagerInstance.getLayout(layoutId) : undefined;
+  const configRef = useRef({ ...DefaultLayoutConfig, ...config });
 
   useLayoutEffect(() => {
     if (!elementRef.current || !layoutId)
       return;
 
     const currentRect = elementRef.current.getBoundingClientRect();
-    LayoutMangerInstance.registerLayout(layoutId, {
+    LayoutManagerInstance.registerLayout(layoutId, {
       element: elementRef.current,
       rect: currentRect,
     });
 
     return () => {
       if (layoutId) {
-        LayoutMangerInstance.unregisterLayout(layoutId);
+        LayoutManagerInstance.unregisterLayout(layoutId);
       }
-      if (animationRef.current) {
-        animationRef.current.cancel();
-      }
+      animationRef.current?.cancel();
     };
   }, []);
 
   useLayoutEffect(() => {
-    if (!elementRef.current || !layoutId)
-      return;
+    const element = elementRef.current;
 
-    const currentRect = elementRef.current.getBoundingClientRect();
+    if (!element || !layoutId) {
+      return;
+    }
+
+    const currentRect = element.getBoundingClientRect();
     const previousLayout = layout;
 
     if (previousLayout && previousLayout.rect) {
@@ -55,7 +58,14 @@ export function useLayoutAnimation<T extends HTMLElement>(layoutId: string, conf
       const deltaScaleX = previousLayout.rect.width / currentRect.width;
       const deltaScaleY = previousLayout.rect.height / currentRect.height;
 
-      animationRef.current = elementRef.current.animate(
+      const previousTransformOrigin = element.style.transformOrigin;
+      const nextTransformOrigin = configRef.current.origin;
+
+      if (previousTransformOrigin !== nextTransformOrigin && nextTransformOrigin) {
+        element.style.transformOrigin = nextTransformOrigin;
+      }
+
+      animationRef.current = element.animate(
         [
           {
             transform: `translate(${deltaX}px, ${deltaY}px) scale(${deltaScaleX}, ${deltaScaleY})`,
