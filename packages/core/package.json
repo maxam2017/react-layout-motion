@@ -21,7 +21,7 @@
     "motion",
     "web-animations-api"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [
