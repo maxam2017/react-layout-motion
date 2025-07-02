@@ -1,6 +1,8 @@
 import type { MotionAnimationConfig } from "../types";
-import { useLayoutEffect, useRef } from "react";
+import { useId, useLayoutEffect, useRef } from "react";
 import { LayoutManager } from "../utils/LayoutManger";
+import { noop } from "../utils/noop";
+import { useEvent } from "./useEvent";
 
 const LayoutManagerInstance = LayoutManager.getInstance();
 
@@ -9,32 +11,39 @@ const DefaultLayoutConfig: MotionAnimationConfig = {
   easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
 };
 
+function useLayoutId(propLayoutId?: string) {
+  const internalLayoutId = useId();
+  return propLayoutId || internalLayoutId;
+}
+
 export function useLayoutAnimation<T extends HTMLElement>(
-  layoutId?: string,
+  propLayoutId?: string,
   config?: MotionAnimationConfig,
-  onLayoutAnimationStart?: () => void,
-  onLayoutAnimationComplete?: () => void,
+  onLayoutAnimationStart = noop,
+  onLayoutAnimationComplete = noop,
 ): React.RefObject<T | null> {
   const elementRef = useRef<T>(null);
   const animationRef = useRef<Animation>(null);
-  const layout = layoutId ? LayoutManagerInstance.getLayout(layoutId) : undefined;
+
   const configRef = useRef({ ...DefaultLayoutConfig, ...config });
-  const onAnimationStartRef = useRef(onLayoutAnimationStart);
-  const onAnimationFinishRef = useRef(onLayoutAnimationComplete);
+  const onAnimationStart = useEvent(onLayoutAnimationStart);
+  const onAnimationFinish = useEvent(onLayoutAnimationComplete);
+
+  const layoutId = useLayoutId(propLayoutId);
+  const viewportLayoutIdRef = useRef<string | null>(null);
 
   useLayoutEffect(() => {
-    if (!elementRef.current || !layoutId)
+    const element = elementRef.current;
+    if (!element) {
       return;
+    }
 
-    const currentRect = elementRef.current.getBoundingClientRect();
-    LayoutManagerInstance.registerLayout(layoutId, {
-      element: elementRef.current,
-      rect: currentRect,
-    });
+    viewportLayoutIdRef.current = LayoutManagerInstance.registerLayout(layoutId, element);
 
     return () => {
-      if (layoutId) {
-        LayoutManagerInstance.unregisterLayout(layoutId);
+      if (viewportLayoutIdRef.current) {
+        LayoutManagerInstance.unregisterLayout(viewportLayoutIdRef.current);
+        viewportLayoutIdRef.current = null;
       }
       animationRef.current?.cancel();
     };
@@ -42,25 +51,25 @@ export function useLayoutAnimation<T extends HTMLElement>(
 
   useLayoutEffect(() => {
     const element = elementRef.current;
-
-    if (!element || !layoutId) {
+    const viewportLayoutId = viewportLayoutIdRef.current;
+    if (!element || !viewportLayoutId) {
       return;
     }
 
-    const currentRect = element.getBoundingClientRect();
-    const previousLayout = layout;
+    const currentLayout = LayoutManagerInstance.getLayout(viewportLayoutId);
+    const previousLayout = LayoutManagerInstance.getPreviousLayout(viewportLayoutId);
 
-    if (previousLayout && previousLayout.rect) {
+    if (previousLayout && previousLayout.rect && currentLayout) {
       // cancel any existing animation
       if (animationRef.current) {
         animationRef.current.cancel();
       }
 
       // FLIP
-      const deltaX = previousLayout.rect.left - currentRect.left;
-      const deltaY = previousLayout.rect.top - currentRect.top;
-      const deltaScaleX = previousLayout.rect.width / currentRect.width;
-      const deltaScaleY = previousLayout.rect.height / currentRect.height;
+      const deltaX = previousLayout.rect.left - currentLayout.rect.left;
+      const deltaY = previousLayout.rect.top - currentLayout.rect.top;
+      const deltaScaleX = previousLayout.rect.width / currentLayout.rect.width;
+      const deltaScaleY = previousLayout.rect.height / currentLayout.rect.height;
 
       const previousTransformOrigin = element.style.transformOrigin;
       const nextTransformOrigin = configRef.current.origin;
@@ -87,22 +96,18 @@ export function useLayoutAnimation<T extends HTMLElement>(
         },
       );
 
-      if (onAnimationStartRef.current) {
-        if (animationRef.current.playState === "idle") {
-          animationRef.current.addEventListener("start", onAnimationStartRef.current);
-        }
-        else {
-          onAnimationStartRef.current();
-        }
+      if (animationRef.current.playState === "idle") {
+        animationRef.current.addEventListener("start", onAnimationStart);
+      }
+      else {
+        onAnimationStart();
       }
 
-      if (onAnimationFinishRef.current) {
-        if (animationRef.current.playState === "finished") {
-          onAnimationFinishRef.current();
-        }
-        else {
-          animationRef.current.addEventListener("finish", onAnimationFinishRef.current);
-        }
+      if (animationRef.current.playState === "finished") {
+        onAnimationFinish();
+      }
+      else {
+        animationRef.current.addEventListener("finish", onAnimationFinish);
       }
     }
   }, []);
