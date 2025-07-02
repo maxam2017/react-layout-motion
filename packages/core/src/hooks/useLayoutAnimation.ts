@@ -1,5 +1,5 @@
 import type { MotionAnimationConfig } from "../types";
-import { useId, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useViewportId } from "../components/Viewport";
 import { LayoutManager } from "../utils/LayoutManger";
 import { noop } from "../utils/noop";
@@ -12,13 +12,8 @@ const DefaultLayoutConfig: MotionAnimationConfig = {
   easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
 };
 
-function useLayoutId(propLayoutId?: string) {
-  const internalLayoutId = useId();
-  return propLayoutId || internalLayoutId;
-}
-
 export function useLayoutAnimation<T extends HTMLElement>(
-  propLayoutId?: string,
+  layoutId?: string,
   config?: MotionAnimationConfig,
   onLayoutAnimationStart = noop,
   onLayoutAnimationComplete = noop,
@@ -30,31 +25,26 @@ export function useLayoutAnimation<T extends HTMLElement>(
   const onAnimationStart = useEvent(onLayoutAnimationStart);
   const onAnimationFinish = useEvent(onLayoutAnimationComplete);
 
-  const layoutId = useLayoutId(propLayoutId);
-  const viewportLayoutIdRef = useRef<string | null>(null);
   const viewportId = useViewportId();
-  const layout = LayoutManagerInstance.getLayout(`${viewportId}:${layoutId}`);
+  const viewportLayoutId = layoutId ? `${viewportId}:${layoutId}` : null;
+  const layout = viewportLayoutId ? LayoutManagerInstance.getLayout(viewportLayoutId) : null;
 
   useLayoutEffect(() => {
     const element = elementRef.current;
-    if (!element) {
+    if (!element || !layoutId) {
       return;
     }
 
-    viewportLayoutIdRef.current = LayoutManagerInstance.registerLayout(layoutId, element);
+    const viewportLayoutId = LayoutManagerInstance.registerLayout(layoutId, element);
 
     return () => {
-      if (viewportLayoutIdRef.current) {
-        LayoutManagerInstance.unregisterLayout(viewportLayoutIdRef.current);
-        viewportLayoutIdRef.current = null;
-      }
+      LayoutManagerInstance.unregisterLayout(viewportLayoutId);
       animationRef.current?.cancel();
     };
   }, []);
 
   useLayoutEffect(() => {
     const element = elementRef.current;
-    const viewportLayoutId = viewportLayoutIdRef.current;
     if (!element || !viewportLayoutId) {
       return;
     }

@@ -1,10 +1,11 @@
 import type { AnimationPhase, MotionAnimationConfig, MotionConfig } from "../types";
 
-import React from "react";
+import React, { useId } from "react";
 import { useLayoutAnimation } from "../hooks/useLayoutAnimation";
 import { useMotionAnimation } from "../hooks/useMotionAnimation";
 
 interface MotionProps {
+  layout?: boolean;
   layoutId?: string;
   children: React.ReactNode;
   className?: string;
@@ -23,7 +24,8 @@ interface MotionProps {
 }
 
 export function Motion({
-  layoutId,
+  layout,
+  layoutId: propLayoutId,
   children,
   style,
   className,
@@ -48,6 +50,9 @@ export function Motion({
       exit: transition,
     },
   };
+
+  const internalLayoutId = useId();
+  const layoutId = propLayoutId || (layout ? internalLayoutId : undefined);
 
   const elementRef = useLayoutAnimation<HTMLElement>(layoutId, layoutTransition, onLayoutAnimationStart, onLayoutAnimationComplete);
   useMotionAnimation(elementRef, motionConfig);
