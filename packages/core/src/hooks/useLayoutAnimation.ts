@@ -1,5 +1,6 @@
 import type { MotionAnimationConfig } from "../types";
 import { useId, useLayoutEffect, useRef } from "react";
+import { useViewportId } from "../components/Viewport";
 import { LayoutManager } from "../utils/LayoutManger";
 import { noop } from "../utils/noop";
 import { useEvent } from "./useEvent";
@@ -31,6 +32,8 @@ export function useLayoutAnimation<T extends HTMLElement>(
 
   const layoutId = useLayoutId(propLayoutId);
   const viewportLayoutIdRef = useRef<string | null>(null);
+  const viewportId = useViewportId();
+  const layout = LayoutManagerInstance.getLayout(`${viewportId}:${layoutId}`);
 
   useLayoutEffect(() => {
     const element = elementRef.current;
@@ -57,7 +60,7 @@ export function useLayoutAnimation<T extends HTMLElement>(
     }
 
     const currentLayout = LayoutManagerInstance.getLayout(viewportLayoutId);
-    const previousLayout = LayoutManagerInstance.getPreviousLayout(viewportLayoutId);
+    const previousLayout = layout;
 
     if (previousLayout && previousLayout.rect && currentLayout) {
       // cancel any existing animation

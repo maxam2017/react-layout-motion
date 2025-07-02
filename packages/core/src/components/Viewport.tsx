@@ -1,4 +1,6 @@
-import { useId, useRef } from "react";
+import { createContext, useContext, useId, useRef } from "react";
+
+const ViewportContext = createContext<string | null>(null);
 
 interface ViewportProps {
   children: React.ReactNode;
@@ -17,8 +19,15 @@ export function Viewport({
   const elementRef = useRef<HTMLElement>(null);
 
   return (
-    <Component data-viewport-id={viewportId} ref={elementRef} className={className} style={style}>
-      {children}
-    </Component>
+    <ViewportContext.Provider value={viewportId}>
+      <Component data-viewport-id={viewportId} ref={elementRef} className={className} style={style}>
+        {children}
+      </Component>
+    </ViewportContext.Provider>
   );
+}
+
+export function useViewportId() {
+  const viewportId = useContext(ViewportContext);
+  return viewportId ?? "root";
 }

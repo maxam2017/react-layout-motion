@@ -7,14 +7,12 @@ interface LayoutManagerInterface {
   registerLayout: (id: string, element: HTMLElement) => string;
   unregisterLayout: (id: string) => void;
   getLayout: (id: string) => Layout | null;
-  getPreviousLayout: (id: string) => Layout | null;
 }
 
 export class LayoutManager implements LayoutManagerInterface {
   private static instance: LayoutManager;
 
   private layoutMap: Map<string, Layout> = new Map();
-  private previousLayoutMap: Map<string, Layout | null> = new Map();
 
   public static getInstance(): LayoutManager {
     if (!LayoutManager.instance) {
@@ -35,17 +33,11 @@ export class LayoutManager implements LayoutManagerInterface {
   }
 
   public unregisterLayout(id: string): void {
-    const layout = this.layoutMap.get(id);
     this.layoutMap.delete(id);
-    this.previousLayoutMap.set(id, layout || null);
   }
 
   public getLayout(id: string): Layout | null {
     return this.layoutMap.get(id) || null;
-  }
-
-  public getPreviousLayout(id: string): Layout | null {
-    return this.previousLayoutMap.get(id) || null;
   }
 
   private getRelativeRect(element: HTMLElement, viewport: Element): DOMRect {
